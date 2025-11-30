@@ -635,42 +635,36 @@ fn ui_system(
 
             ui.separator();
 
-            // Tessellation density slider (logarithmic scale for better UX)
-            // Lower factor = finer mesh, higher factor = coarser mesh
-            // Range: 10^-4 (0.0001, very fine) to 10^-1.5 (0.032, very coarse)
-            let mut log_factor = state.tessellation_factor.log10();
-            ui.label("Mesh:");
+            // Quality slider (logarithmic scale for better UX)
+            // Higher quality = finer mesh (smaller tessellation factor)
+            // Quality maps to -log10(tessellation_factor): 1.5 (low) to 4.0 (ultra)
+            let mut quality = -state.tessellation_factor.log10();
+            ui.label("Quality:");
             let slider = ui.add(
-                egui::Slider::new(&mut log_factor, -4.0_f64..=-1.5_f64)
+                egui::Slider::new(&mut quality, 1.5_f64..=4.0_f64)
                     .show_value(false)
                     .custom_formatter(|v, _| {
-                        // Show as density level based on log scale
-                        if v < -3.5 {
+                        if v > 3.5 {
                             "Ultra".to_string()
-                        } else if v < -2.8 {
+                        } else if v > 2.8 {
                             "High".to_string()
-                        } else if v < -2.2 {
+                        } else if v > 2.2 {
                             "Medium".to_string()
                         } else {
                             "Low".to_string()
                         }
                     }),
             );
-            if slider.changed() {
-                state.tessellation_factor = 10_f64.powf(log_factor);
-            }
-            slider.on_hover_text("Mesh tessellation density");
-
-            // Reload button - only show when a file is loaded and density changed from current
-            if state.loaded_path.is_some() && state.loading_job.is_none() {
-                if ui
-                    .button("↻")
-                    .on_hover_text("Re-tessellate with new density")
-                    .clicked()
-                {
+            if slider.drag_stopped() && state.loaded_path.is_some() && state.loading_job.is_none() {
+                let new_factor = 10_f64.powf(-quality);
+                if (new_factor - state.tessellation_factor).abs() > 1e-10 {
+                    state.tessellation_factor = new_factor;
                     state.pending_path = state.loaded_path.clone();
                 }
+            } else if slider.changed() {
+                state.tessellation_factor = 10_f64.powf(-quality);
             }
+            slider.on_hover_text("Tessellation quality (releases to apply)");
 
             ui.separator();
 

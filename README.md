@@ -65,10 +65,10 @@ dnf install clang clang-devel clang-tools-extra libxkbcommon-devel pkg-config op
 
 ## Dependencies
 
-- [Bevy](https://bevyengine.org/) - Game engine for rendering
-- [egui](https://github.com/emilk/egui/) - Immediate mode GUI
-- [truck](https://github.com/ricosjp/truck) - STEP file parsing and tessellation
-- [bevy_panorbit_camera](https://github.com/Plonq/bevy_panorbit_camera) - Camera controls
+- [`bevy`](https://bevyengine.org/) - Game engine for rendering
+- [`egui`](https://github.com/emilk/egui/) - Immediate mode GUI
+- [`truck`](https://github.com/ricosjp/truck) - STEP file parsing and tessellation
+- [`bevy_panorbit_camera`](https://github.com/Plonq/bevy_panorbit_camera) - Camera controls
 
 ## License
 
