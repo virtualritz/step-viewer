@@ -1,0 +1,31 @@
+[package]
+name = "step-viewer"
+version = "0.1.0"
+authors = ["Matt Keeter <matt.j.keeter@gmail.com>"]
+edition = "2024"
+rust-version = "1.88"
+
+[dependencies]
+anyhow = "1"
+bevy = { version = "0.17", default-features = true, features = ["wayland"] }
+bevy_egui = "0.38"
+bevy_panorbit_camera = "0.33"
+futures-lite = "2"
+env_logger = "0.11"
+glam = "0.30"
+log = "0.4"
+rayon = "1"
+rfd = "0.15"
+ruststep = { version = "0.4", features = ["ap203"] }
+serde = { version = "1", features = ["derive"] }
+truck-geotrait = { path = "../truck/truck-geotrait" }
+truck-meshalgo = { path = "../truck/truck-meshalgo" }
+truck-stepio = { path = "../truck/truck-stepio" }
+truck-topology = { path = "../truck/truck-topology" }
+
+[profile.release]
+opt-level = 2 # fast and small wasm
+
+# Optimize all dependencies even in debug builds:
+[profile.dev.package."*"]
+opt-level = 2
