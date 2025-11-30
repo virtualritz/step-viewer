@@ -1,19 +1,19 @@
-# STEP Viewer
+# `step-viewer`
 
-A 3D viewer for STEP (ISO 10303-21) CAD files, built with Bevy and egui.
+A 3D viewer for STEP (ISO 10303-21) CAD files, built with `bevy` and `egui` and `truck` for geomtry handling.
 
 ## Features
 
-- Load and display STEP files with full assembly support
-- Model hierarchy panel showing shells and faces
-- Per-face visibility toggling
-- Random colors mode for visualizing individual faces
-- STEP-defined colors from the file
-- Adjustable tessellation density
-- Wireframe edge display (boundary edges)
-- Bounding box visualization
-- Pan/orbit camera controls
-- File metadata display
+- Load and display STEP files with full assembly support.
+- Model hierarchy panel showing shells and faces.
+- Per-face visibility toggling.
+- Random colors mode for visualizing individual faces.
+- STEP-defined colors from the file.
+- Adjustable tessellation density.
+- Wireframe edge display (boundary edges).
+- Bounding box visualization.
+- Pan/orbit camera controls.
+- File metadata display.
 
 ## Usage
 
