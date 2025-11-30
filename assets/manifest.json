@@ -1,6 +1,6 @@
 {
-  "name": "egui Template PWA",
-  "short_name": "egui-template-pwa",
+  "name": "STEP Viewer",
+  "short_name": "step-viewer",
   "icons": [
     {
       "src": "./assets/icon-256.png",
