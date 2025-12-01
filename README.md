@@ -1,6 +1,6 @@
 # `step-viewer`
 
-A 3D viewer for STEP (ISO 10303-21) CAD files, built with `bevy` and `egui` and `truck` for geomtry handling.
+A 3D viewer for STEP (ISO 10303-21) CAD files, built with `truck`, `bevy` and `egui`.
 
 ## Features
 

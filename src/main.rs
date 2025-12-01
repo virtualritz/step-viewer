@@ -212,10 +212,10 @@ fn setup_scene(mut commands: Commands, mut egui_global_settings: ResMut<EguiGlob
     // Disable auto egui context - we create our own camera for it
     egui_global_settings.auto_create_primary_context = false;
 
-    // Ambient light - higher brightness for SSAO scenes (SSAO dims ambient occlusion areas)
+    // Ambient light - low for more contrast
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
-        brightness: 500.0,
+        brightness: 200.0,
         affects_lightmapped_meshes: false,
     });
 
@@ -233,33 +233,33 @@ fn setup_scene(mut commands: Commands, mut egui_global_settings: ResMut<EguiGlob
             },
         ))
         .with_children(|parent| {
-            // Key light - main directional light from upper right (relative to camera)
+            // Key light - main directional light from top-left (relative to camera)
             parent.spawn((
                 DirectionalLight {
-                    illuminance: 10000.0,
+                    illuminance: 15000.0,
                     shadows_enabled: true,
                     ..Default::default()
                 },
                 Transform::from_rotation(Quat::from_euler(
-                    EulerRot::ZYX,
+                    EulerRot::YXZ,
+                    std::f32::consts::PI * 0.25,  // 45° rotated left
+                    std::f32::consts::PI * -0.3,  // 54° down from horizontal
                     0.0,
-                    std::f32::consts::PI * -0.15,
-                    std::f32::consts::PI * -0.15,
                 )),
             ));
 
-            // Fill light - softer from the opposite side (relative to camera)
+            // Back light - from bottom-right-back (relative to camera)
             parent.spawn((
                 DirectionalLight {
-                    illuminance: 3000.0,
+                    illuminance: 2000.0,
                     shadows_enabled: false,
                     ..Default::default()
                 },
                 Transform::from_rotation(Quat::from_euler(
-                    EulerRot::ZYX,
+                    EulerRot::YXZ,
+                    std::f32::consts::PI * -0.7,  // 126° rotated right (behind)
+                    std::f32::consts::PI * 0.15,  // 27° up from horizontal
                     0.0,
-                    std::f32::consts::PI * 0.6,
-                    std::f32::consts::PI * -0.1,
                 )),
             ));
         });
