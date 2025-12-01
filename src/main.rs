@@ -638,7 +638,8 @@ fn ui_system(
             // Quality slider (logarithmic scale for better UX)
             // Higher quality = finer mesh (smaller tessellation factor)
             // Quality maps to -log10(tessellation_factor): 1.5 (low) to 4.0 (ultra)
-            let mut quality = -state.tessellation_factor.log10();
+            let old_factor = state.tessellation_factor;
+            let mut quality = -old_factor.log10();
             ui.label("Quality:");
             let slider = ui.add(
                 egui::Slider::new(&mut quality, 1.5_f64..=4.0_f64)
@@ -655,16 +656,19 @@ fn ui_system(
                         }
                     }),
             );
-            if slider.drag_stopped() && state.loaded_path.is_some() && state.loading_job.is_none() {
-                let new_factor = 10_f64.powf(-quality);
-                if (new_factor - state.tessellation_factor).abs() > 1e-10 {
-                    state.tessellation_factor = new_factor;
-                    state.pending_path = state.loaded_path.clone();
-                }
-            } else if slider.changed() {
-                state.tessellation_factor = 10_f64.powf(-quality);
+            let new_factor = 10_f64.powf(-quality);
+            if slider.changed() {
+                state.tessellation_factor = new_factor;
             }
-            slider.on_hover_text("Tessellation quality (releases to apply)");
+            // Reload on release if value changed and file is loaded
+            if slider.drag_stopped()
+                && state.loaded_path.is_some()
+                && state.loading_job.is_none()
+                && (new_factor - old_factor).abs() > 1e-10
+            {
+                state.pending_path = state.loaded_path.clone();
+            }
+            slider.on_hover_text("Tessellation quality (release to apply)");
 
             ui.separator();
 
