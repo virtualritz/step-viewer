@@ -40,6 +40,8 @@ struct ViewerState {
     current_bounds: Option<Bounds>,
     /// Tessellation density factor (smaller = more triangles). Range: 0.0005 to 0.02
     tessellation_factor: f64,
+    /// Tessellation factor used for currently loaded scene (to detect changes)
+    applied_tessellation_factor: f64,
     /// Flag to trigger visibility update (avoids costly is_changed() checks)
     visibility_changed: bool,
     /// Scene normalization: original center (for wireframe rendering)
@@ -67,6 +69,7 @@ impl Default for ViewerState {
             needs_mesh_rebuild: false,
             current_bounds: None,
             tessellation_factor: 0.001, // Default: matches original hardcoded value
+            applied_tessellation_factor: 0.001,
             visibility_changed: false,
             scene_center: Vec3::ZERO,
             scene_scale: 1.0,
@@ -389,6 +392,9 @@ fn process_load_requests(
                     });
                 }
 
+                // Track the tessellation factor used for this load
+                state.applied_tessellation_factor = state.tessellation_factor;
+
                 info!(
                     "Finished loading {} shells, {} faces",
                     state.shells.len(),
@@ -638,8 +644,7 @@ fn ui_system(
             // Quality slider (logarithmic scale for better UX)
             // Higher quality = finer mesh (smaller tessellation factor)
             // Quality maps to -log10(tessellation_factor): 1.5 (low) to 4.0 (ultra)
-            let old_factor = state.tessellation_factor;
-            let mut quality = -old_factor.log10();
+            let mut quality = -state.tessellation_factor.log10();
             ui.label("Quality:");
             let slider = ui.add(
                 egui::Slider::new(&mut quality, 1.5_f64..=4.0_f64)
@@ -660,15 +665,17 @@ fn ui_system(
             if slider.changed() {
                 state.tessellation_factor = new_factor;
             }
-            // Reload on release if value changed and file is loaded
-            if slider.drag_stopped()
+            // Reload when slider released and factor differs from what was used to load
+            let factor_changed =
+                (state.tessellation_factor - state.applied_tessellation_factor).abs() > 1e-10;
+            if !slider.dragged()
+                && factor_changed
                 && state.loaded_path.is_some()
                 && state.loading_job.is_none()
-                && (new_factor - old_factor).abs() > 1e-10
             {
                 state.pending_path = state.loaded_path.clone();
             }
-            slider.on_hover_text("Tessellation quality (release to apply)");
+            slider.on_hover_text("Tessellation quality");
 
             ui.separator();
 
